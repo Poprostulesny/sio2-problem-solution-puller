@@ -1,0 +1,14 @@
+1. config file 
+    - sio2 link
+    - username
+    - password
+    - minimum number of points
+    - directory in which to put the files 
+2. open the given sio2 website
+3. find login and password
+4. log in
+
+5. create a list of all of the tasks with solutions, and dowload them
+6. pull the solutions with the highest number of points for every tasks
+    - if there doesnt exist a solution with points over the threshold then delete it from the list
+7. put those files in the given directory divided into folders of chapters
