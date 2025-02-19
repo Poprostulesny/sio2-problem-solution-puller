@@ -4,6 +4,7 @@ from selenium.webdriver.support.relative_locator import locate_with
 import time
 import utils
 from collections import ChainMap
+import os
 #config
 user = "MateuszL"
 password = "Qw1atek1"
@@ -12,11 +13,19 @@ point_threshold = 0
 dir = "C:\\Users\\jarek\\Documents"
 ##########
 
-
 #configuring the driver
-browser = webdriver.Edge()
+dir_temp = dir + "\\temp"
+options = webdriver.EdgeOptions()
+options.add_argument("--print-to-pdf")#enable printing
+options.add_argument("--kiosk-printing")#disable prompt
+prefs = {"printing.print_preview_sticky_settings.appState": '{"recentDestinations":[{"id":"Save as PDF","origin":"local","account":"","capabilities":{}}],"selectedDestinationId":"Save as PDF","version":2}',"savefile.default_directory":dir_temp}
+options.add_experimental_option("prefs", prefs)
+browser = webdriver.Edge(options=options)
 browser.implicitly_wait(4)
 
+# browser.get("https://sio2.mimuw.edu.pl/c/oi32-1/p/bit/")
+# browser.execute_script('window.print();')
+# time.sleep(5)
 #searching for login
 browser.get(link+"\\login\\")
 login_name = browser.find_element(By.ID, "id_username")

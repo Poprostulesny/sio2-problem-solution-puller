@@ -22,9 +22,7 @@ def redirect_to_solutions(url):
     url_new+="/submissions"
     return(url_new)
 
-
-def create_list_of_tasks(browser):
-    browser.find_elements
+filename=newfile
 
 
         
