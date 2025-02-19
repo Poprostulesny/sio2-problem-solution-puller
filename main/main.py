@@ -2,6 +2,8 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By 
 from selenium.webdriver.support.relative_locator import locate_with
 import time
+import utils
+from collections import ChainMap
 #config
 user = "MateuszL"
 password = "Qw1atek1"
@@ -13,7 +15,7 @@ dir = "C:\\Users\\jarek\\Documents"
 
 #configuring the driver
 browser = webdriver.Edge()
-browser.implicitly_wait(2)
+browser.implicitly_wait(4)
 
 #searching for login
 browser.get(link+"\\login\\")
@@ -41,4 +43,40 @@ for i in range(len(table)):
 print("Choose the number corresponding to the contest which answers you want to pull")
 for i in range(len(list_of_options)):
     print(i,list_of_options[i].text)
+
+choice = int(input())
+print("You chose ", list_of_options[choice].text, " . \nPress Y if you want to continue." )
+
+p=input()
+if p != 'Y' and p != 'y':
+    quit()
+
+###################
+# We're in
+list_of_options[choice].click()
+
+#getting to tasks
+url = browser.current_url
+url= utils.redirect_to_tasks(url)
+browser.get(url)
+
+#getting the tasks
+#we need to do it for every site of tasks
+#then merge the results
+tasks_subjects = browser.find_elements(By.CLASS_NAME,"problemlist-subheader")
+tasks = []
+for i in range(len(tasks_subjects)):
+   
+    if i == len(tasks_subjects)-1:
+        pom=browser.find_elements(locate_with(By.TAG_NAME,"a").below(tasks_subjects[i]).above(tasks_subjects[i+1]))
+    else:
+        pom=browser.find_elements(locate_with(By.TAG_NAME,"a").below(tasks_subjects[i]).above({By.TAG_NAME: "footer"}))
+    
+    tasks.append([tasks_subjects[i].text, pom_links, pom_files, pom_names])
+
+
+
+
+
+
 time.sleep(5)
