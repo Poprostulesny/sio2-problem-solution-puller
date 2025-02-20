@@ -1,10 +1,10 @@
-import utils
 from selenium import webdriver
 from selenium.webdriver.common.by import By 
 from selenium.webdriver.support.relative_locator import locate_with
 import time
 from collections import ChainMap
 import os
+import utils
 
 #config
 user = "MateuszL"
@@ -70,38 +70,14 @@ list_of_options[choice].click()
 url = browser.current_url
 url= utils.redirect_to_tasks(url)
 browser.get(url)
+pages = utils.how_many_pages(browser)
 
 #getting the tasks
 #we need to do it for every site of tasks
 #then merge the results
-parent_div = browser.find_element(By.CLASS_NAME, "table")
-#getting the div
-tasks_subjects = parent_div.find_elements(By.CLASS_NAME,"problemlist-subheader")
-links=parent_div.find_elements(By.TAG_NAME,"a")
+utils.extract_link_structure(pages,browser)
 
-
-
-tasks_links = []
-t=1
-pom=[]
-for i in links:
-    if(t!=len(tasks_subjects)):
-        if i.location['y']<tasks_subjects[t].location['y']:
-            pom.append(i)
-        else:
-            tasks_links.append([tasks_subjects[t-1].text,pom])
-            pom=[]
-            t+=1
-            pom.append(i)
-    else:
-        pom.append(i)
-
-tasks_links.append([tasks_subjects[t-1].text,pom])
-
-for i in tasks_links:
-    for y in i[1]:
-        print(y.text)
-
+#print( utils.get_base_url(browser.current_url)+"/p/?page=" + str(2)+"/")
 
 
 
