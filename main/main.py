@@ -16,6 +16,7 @@ dir = "C:\\Users\\jarek\\Documents"
 #configuring the driver
 dir_temp = dir + "\\temp"
 options = webdriver.EdgeOptions()
+#options.add_argument("--headless")
 options.add_argument("--print-to-pdf")#enable printing
 options.add_argument("--kiosk-printing")#disable prompt
 prefs = {"printing.print_preview_sticky_settings.appState": '{"recentDestinations":[{"id":"Save as PDF","origin":"local","account":"","capabilities":{}}],"selectedDestinationId":"Save as PDF","version":2}',"savefile.default_directory":dir_temp}
@@ -23,9 +24,7 @@ options.add_experimental_option("prefs", prefs)
 browser = webdriver.Edge(options=options)
 browser.implicitly_wait(4)
 
-# browser.get("https://sio2.mimuw.edu.pl/c/oi32-1/p/bit/")
-# browser.execute_script('window.print();')
-# time.sleep(5)
+
 #searching for login
 browser.get(link+"\\login\\")
 login_name = browser.find_element(By.ID, "id_username")
@@ -74,15 +73,26 @@ browser.get(url)
 #then merge the results
 tasks_subjects = browser.find_elements(By.CLASS_NAME,"problemlist-subheader")
 tasks = []
-for i in range(len(tasks_subjects)):
-   
-    if i == len(tasks_subjects)-1:
-        pom=browser.find_elements(locate_with(By.TAG_NAME,"a").below(tasks_subjects[i]).above(tasks_subjects[i+1]))
-    else:
-        pom=browser.find_elements(locate_with(By.TAG_NAME,"a").below(tasks_subjects[i]).above({By.TAG_NAME: "footer"}))
+# for i in range(len(tasks_subjects)):
     
-    tasks.append([tasks_subjects[i].text, pom_links, pom_files, pom_names])
+#     if i == len(tasks_subjects)-1:
+#         pom=browser.find_elements(locate_with(By.TAG_NAME,"a").below(tasks_subjects[i]).above(tasks_subjects[i+1]))
+#     else:
+#         pom=browser.find_elements(locate_with(By.TAG_NAME,"a").below(tasks_subjects[i]).above({By.TAG_NAME: "footer"}))
+#     pom_links=[]
+#     for i in pom:
+#         pom_links.append(i.get_attribute('href'))
+#         print(i.get_attribute('href'))
+pom=browser.find_elements(locate_with(By.TAG_NAME,"a").below(tasks_subjects[0]).above(tasks_subjects[1]))
+    ###    0
+for i in pom:
+    print(i.get_attribute('href'))
+    #tasks.append([tasks_subjects[i].text, pom_links, pom_files, pom_names])
 
+
+# browser.get("https://sio2.mimuw.edu.pl/c/oi32-1/p/bit/")
+# browser.execute_script('window.print();')
+# time.sleep(5)
 
 
 
