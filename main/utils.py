@@ -1,3 +1,10 @@
+from selenium import webdriver
+from selenium.webdriver.common.by import By 
+from selenium.webdriver.support.relative_locator import locate_with
+import time
+from collections import ChainMap
+import os
+
 def get_base_url(url):
     desc_iter=0
     for i in range(len(url)-1):

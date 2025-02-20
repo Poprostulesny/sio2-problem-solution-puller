@@ -1,10 +1,11 @@
+import utils
 from selenium import webdriver
 from selenium.webdriver.common.by import By 
 from selenium.webdriver.support.relative_locator import locate_with
 import time
-import utils
 from collections import ChainMap
 import os
+
 #config
 user = "MateuszL"
 password = "Qw1atek1"
@@ -52,10 +53,12 @@ print("Choose the number corresponding to the contest which answers you want to 
 for i in range(len(list_of_options)):
     print(i,list_of_options[i].text)
 
-choice = int(input())
+#choice = int(input())
+choice =0
 print("You chose ", list_of_options[choice].text, " . \nPress Y if you want to continue." )
 
-p=input()
+#p=input()
+p='y'
 if p != 'Y' and p != 'y':
     quit()
 
@@ -71,23 +74,48 @@ browser.get(url)
 #getting the tasks
 #we need to do it for every site of tasks
 #then merge the results
-tasks_subjects = browser.find_elements(By.CLASS_NAME,"problemlist-subheader")
-tasks = []
-# for i in range(len(tasks_subjects)):
-    
-#     if i == len(tasks_subjects)-1:
-#         pom=browser.find_elements(locate_with(By.TAG_NAME,"a").below(tasks_subjects[i]).above(tasks_subjects[i+1]))
-#     else:
-#         pom=browser.find_elements(locate_with(By.TAG_NAME,"a").below(tasks_subjects[i]).above({By.TAG_NAME: "footer"}))
-#     pom_links=[]
-#     for i in pom:
-#         pom_links.append(i.get_attribute('href'))
-#         print(i.get_attribute('href'))
-pom=browser.find_elements(locate_with(By.TAG_NAME,"a").below(tasks_subjects[0]).above(tasks_subjects[1]))
-    ###    0
-for i in pom:
-    print(i.get_attribute('href'))
-    #tasks.append([tasks_subjects[i].text, pom_links, pom_files, pom_names])
+parent_div = browser.find_element(By.CLASS_NAME, "table")
+#getting the div
+tasks_subjects = parent_div.find_elements(By.CLASS_NAME,"problemlist-subheader")
+links=parent_div.find_elements(By.TAG_NAME,"a")
+
+
+
+tasks_links = []
+t=1
+pom=[]
+for i in links:
+    if(t!=len(tasks_subjects)):
+        if i.location['y']<tasks_subjects[t].location['y']:
+            pom.append(i)
+        else:
+            tasks_links.append([tasks_subjects[t-1].text,pom])
+            pom=[]
+            t+=1
+            pom.append(i)
+    else:
+        pom.append(i)
+
+tasks_links.append([tasks_subjects[t-1].text,pom])
+
+for i in tasks_links:
+    for y in i[1]:
+        print(y.text)
+
+
+
+
+
+
+
+
+
+
+
+###    
+# for i in pom:
+#     print(i.get_attribute('href'))
+#  tasks.append([tasks_subjects[i].text, pom_links, pom_files, pom_names])
 
 
 # browser.get("https://sio2.mimuw.edu.pl/c/oi32-1/p/bit/")
