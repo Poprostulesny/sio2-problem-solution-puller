@@ -75,7 +75,9 @@ pages = utils.how_many_pages(browser)
 #getting the tasks
 #we need to do it for every site of tasks
 #then merge the results
-utils.extract_link_structure(pages,browser)
+
+link_structure = utils.extract_link_structure(pages,browser)
+
 
 #print( utils.get_base_url(browser.current_url)+"/p/?page=" + str(2)+"/")
 
