@@ -5,13 +5,11 @@ import time
 from collections import ChainMap
 import os
 import utils
+import config
 
 #config
-user = "MateuszL"
-password = "Qw1atek1"
-link = "https://sio2.staszic.waw.pl/"
+user, password, link, dir = config.fileconfig()
 point_threshold = 0
-dir = "C:\\Users\\jarek\\Documents"
 ##########
 
 #configuring the driver
@@ -67,33 +65,26 @@ if p != 'Y' and p != 'y':
 list_of_options[choice].click()
 
 #getting to tasks
-url = browser.current_url
-url= utils.redirect_to_tasks(url)
+url_base = browser.current_url
+url= utils.redirect_to_tasks(url_base)
 browser.get(url)
 pages = utils.how_many_pages(browser)
 
-#getting the tasks
-#we need to do it for every site of tasks
-#then merge the results
+#extracting link structure
+#link_structure structure - (topic,list_of_tasks[{"text", "href", "id"}])
+#link_structure = utils.extract_link_structure(pages,browser)
 
-link_structure = utils.extract_link_structure(pages,browser)
-
-
-#print( utils.get_base_url(browser.current_url)+"/p/?page=" + str(2)+"/")
+#dictionary = utils.create_map(link_structure)
 
 
+url= utils.redirect_to_solutions(url_base)
+browser.get(url)
+pages = utils.how_many_pages(browser)
+#result_structure = ("id", "score", "link")
 
-
-
-
-
-
-
-
-###    
-# for i in pom:
-#     print(i.get_attribute('href'))
-#  tasks.append([tasks_subjects[i].text, pom_links, pom_files, pom_names])
+result_structure = utils.extract_result_structure(pages, browser)
+for i in result_structure:
+    print(i)
 
 
 # browser.get("https://sio2.mimuw.edu.pl/c/oi32-1/p/bit/")
