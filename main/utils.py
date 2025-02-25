@@ -5,6 +5,7 @@ from selenium.common.exceptions import NoSuchElementException
 from functools import cmp_to_key
 import time
 import os
+import base64
 
 def get_base_url(url):
     desc_iter=0
@@ -66,7 +67,8 @@ def link_structure(tasks_links_old, browser:webdriver.Edge):
                 pom.append({
                 "text": links[i].text,
                 "href": links[i].get_attribute("href"),
-                "id": id[i].text
+                "id": id[i].text,
+                "solved":0
                 })
             else:
                 tasks_links.append([tasks_subjects[t-1].text,pom])
@@ -75,13 +77,15 @@ def link_structure(tasks_links_old, browser:webdriver.Edge):
                 pom.append({
                 "text": links[i].text,
                 "href": links[i].get_attribute("href"),
-                 "id": id[i].text
+                 "id": id[i].text,
+                 "solved":0
                 })
         else:
             pom.append({
             "text": links[i].text,
             "href": links[i].get_attribute("href"),
-             "id": id[i].text
+             "id": id[i].text,
+             "solved":0
             })
 
     tasks_links.append([tasks_subjects[len(tasks_subjects)-1].text,pom])   
@@ -155,7 +159,7 @@ def result_structure(browser:webdriver.Edge, result_structure_old):
     
     for i in range(len(tasks)):
         if(score[i].text == ''):
-            result_structure_old.append({ "id":id_from_name(tasks[i].text), "score": 0, "link" :links[i].get_attribute("href")})
+            result_structure_old.append({ "id":id_from_name(tasks[i].text), "score": -1, "link" :links[i].get_attribute("href")})
         else:
             result_structure_old.append({ "id":id_from_name(tasks[i].text), "score": int(score[i].text), "link" :links[i].get_attribute("href")})
     
@@ -188,7 +192,58 @@ def match_to_map(results, dict, links, browser:webdriver.Edge):
         i, y = dict[x["id"]]
         links[i][1][y]["score"]=x["score"]
         links[i][1][y]["sol_link"]=x["link"]+"download/"
+        links[i][1][y]["solved"]=1
     return links
+
+def extract_type(file):
+    i=len(file)-1
+    type = ""
+    while(file[i]!='.'):
+        type=file[i]+type
+        i-=1
+    type = '.' + type
+    return type
+def file_download(path_temp, path_end, url, browser:webdriver.Edge, task, name):
+    if(task == 1):
+        browser.get(url)
+        pdf = browser.execute_cdp_cmd("Page.printToPDF", {"printBackground": True})
+        pdf_data = base64.b64decode(pdf['data'])
+        pdf_path = path_end + r"\\"+name+".pdf"
+        with open(pdf_path, "wb") as f:
+            f.write(pdf_data)
+        return
+    
+    browser.get(url)
+    time.sleep(0.7)
+    file=list(os.scandir(path_temp))
+    type = extract_type(file[0].name)
+    os.rename(file[0].path, path_end+"\\"+name+type)
+    return
+    
+
+def create_filesystem(tab, dir, dir_temp, browser:webdriver.Edge):
+    #tab structure - (topic,list_of_tasks[{"text", "href", "id", "sol_link", "score"}])
+    for i in tab:
+        dir_new= dir+"\\"+i[0]
+        if not os.path.exists(dir_new):
+            os.makedirs(dir_new)
         
-# def create_filesystem:
-        
+        for y in i[1]:
+            dir_new_p = dir_new + "\\"+y["text"]
+            if not os.path.exists(dir_new_p):
+                os.makedirs(dir_new_p)
+            if(y["solved"]==1):
+                os.system('cls')
+                print("downloading", y["text"]+"_"+str(y["score"]) )
+                file_download(dir_temp, dir_new_p, y["sol_link"],browser,0,y["text"]+"_"+str(y["score"]) )
+                os.system('cls')
+                print("downloading", y["text"] )
+                file_download(dir_temp, dir_new_p,y["href"],browser, 1, y["text"])
+                
+            else:
+                os.system('cls')
+                print("downloading", y["text"] )
+                file_download(dir_temp, dir_new_p,y["href"],browser, 1, y["text"]+" unsolved")
+
+           
+            

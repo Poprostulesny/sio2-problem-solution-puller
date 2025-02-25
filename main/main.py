@@ -22,14 +22,13 @@ options.add_argument("--print-to-pdf")#enable printing
 # prefs = {"printing.print_preview_sticky_settings.appState": '{"recentDestinations":[{"id":"Save as PDF","origin":"local","account":"","capabilities":{}}],"selectedDestinationId":"Save as PDF","version":2}',"savefile.default_directory":dir_temp}
 # options.add_experimental_option("prefs", prefs)
 settings = {"recentDestinations": [{"id": "Save as PDF", "origin": "local", "account": ""}], "selectedDestinationId": "Save as PDF", "version": 2}
-prefs = {'printing.print_preview_sticky_settings.appState': json.dumps(settings), "download.default_directory": dir,"download.directory_upgrade": True,
+prefs = {'printing.print_preview_sticky_settings.appState': json.dumps(settings), "download.default_directory": dir_temp,"download.directory_upgrade": True,
     "download.prompt_for_download": False, "profile.default_content_settings.popups": 0}
 options.add_experimental_option('prefs', prefs)
-
 browser = webdriver.Edge(options=options)
 browser.implicitly_wait(4)
-
-
+if not os.path.exists(dir_temp):
+                os.makedirs(dir_temp)
 #searching for login
 browser.get(link+"\\login\\")
 login_name = browser.find_element(By.ID, "id_username")
@@ -57,20 +56,23 @@ print("Choose the number corresponding to the contest which answers you want to 
 for i in range(len(list_of_options)):
     print(i,list_of_options[i].text)
 
-#choice = int(input())
-choice =0
+choice = int(input())
+# choice =0
+os.system('cls')
 print("You chose ", list_of_options[choice].text, " . \nPress Y if you want to continue." )
 
-#p=input()
-p='y'
+p=input()
+
 if p != 'Y' and p != 'y':
     quit()
-
+os.system('cls')
 ###################
 # We're in
 list_of_options[choice].click()
 
 #getting to tasks
+os.system('cls')
+print("Getting tasks...")
 url_base = browser.current_url
 url= utils.redirect_to_tasks(url_base)
 browser.get(url)
@@ -78,8 +80,11 @@ pages = utils.how_many_pages(browser)
 
 #extracting link structure
 #link_structure structure - (topic,list_of_tasks[{"text", "href", "id"}])
+os.system('cls')
+print("Getting link structure...")
 link_structure = utils.extract_link_structure(pages,browser)
-
+os.system('cls')
+print("Creating dictionary...")
 dictionary = utils.create_map(link_structure)
 
 
@@ -87,14 +92,21 @@ url= utils.redirect_to_solutions(url_base)
 browser.get(url)
 pages = utils.how_many_pages(browser)
 #result_structure = ("id", "score", "link")
-
+os.system('cls')
+print("Getting results structure...")
 result_structure = utils.extract_result_structure(pages, browser)
 
 result_structure = utils.only_best_results(result_structure)
-
+#merge structure - (topic,list_of_tasks[{"text", "href", "id", "sol_link", "score"}])
+os.system('cls')
+print("Merging solutions and tasks...")
 merge = utils.match_to_map(result_structure,dictionary, link_structure, browser)
+os.system('cls')
+print("Downloading and organizing files...")
+#utils.file_download(dir_temp, dir,"https://sio2.staszic.waw.pl/c/matinf_k20_c/s/649572/download/",browser,0,"ab ba" )
+# utils.print_link_structure(merge)
+utils.create_filesystem(merge,dir,dir_temp,browser)
 
-#utils.print_link_structure(merge)
 
 # browser.get("https://sio2.staszic.waw.pl/c/matinf_k20_c/p/apt/1150/")
 # pdf = browser.execute_cdp_cmd("Page.printToPDF", {"printBackground": True})
