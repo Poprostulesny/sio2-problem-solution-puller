@@ -2,11 +2,11 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By 
 from selenium.webdriver.support.relative_locator import locate_with
 import time
-from collections import ChainMap
 import os
 import utils
 import config
-
+import json
+import base64
 #config
 user, password, link, dir = config.fileconfig()
 point_threshold = 0
@@ -18,8 +18,14 @@ options = webdriver.EdgeOptions()
 #options.add_argument("--headless")
 options.add_argument("--print-to-pdf")#enable printing
 options.add_argument("--kiosk-printing")#disable prompt
-prefs = {"printing.print_preview_sticky_settings.appState": '{"recentDestinations":[{"id":"Save as PDF","origin":"local","account":"","capabilities":{}}],"selectedDestinationId":"Save as PDF","version":2}',"savefile.default_directory":dir_temp}
-options.add_experimental_option("prefs", prefs)
+options.add_argument("--print-to-pdf")#enable printing
+# prefs = {"printing.print_preview_sticky_settings.appState": '{"recentDestinations":[{"id":"Save as PDF","origin":"local","account":"","capabilities":{}}],"selectedDestinationId":"Save as PDF","version":2}',"savefile.default_directory":dir_temp}
+# options.add_experimental_option("prefs", prefs)
+settings = {"recentDestinations": [{"id": "Save as PDF", "origin": "local", "account": ""}], "selectedDestinationId": "Save as PDF", "version": 2}
+prefs = {'printing.print_preview_sticky_settings.appState': json.dumps(settings), "download.default_directory": dir,"download.directory_upgrade": True,
+    "download.prompt_for_download": False, "profile.default_content_settings.popups": 0}
+options.add_experimental_option('prefs', prefs)
+
 browser = webdriver.Edge(options=options)
 browser.implicitly_wait(4)
 
@@ -72,9 +78,9 @@ pages = utils.how_many_pages(browser)
 
 #extracting link structure
 #link_structure structure - (topic,list_of_tasks[{"text", "href", "id"}])
-#link_structure = utils.extract_link_structure(pages,browser)
+link_structure = utils.extract_link_structure(pages,browser)
 
-#dictionary = utils.create_map(link_structure)
+dictionary = utils.create_map(link_structure)
 
 
 url= utils.redirect_to_solutions(url_base)
@@ -85,13 +91,17 @@ pages = utils.how_many_pages(browser)
 result_structure = utils.extract_result_structure(pages, browser)
 
 result_structure = utils.only_best_results(result_structure)
-for i in result_structure:
-    print(i)
-    
 
-# browser.get("https://sio2.mimuw.edu.pl/c/oi32-1/p/bit/")
-# browser.execute_script('window.print();')
-# time.sleep(5)
+merge = utils.match_to_map(result_structure,dictionary, link_structure, browser)
+
+#utils.print_link_structure(merge)
+
+# browser.get("https://sio2.staszic.waw.pl/c/matinf_k20_c/p/apt/1150/")
+# pdf = browser.execute_cdp_cmd("Page.printToPDF", {"printBackground": True})
+# pdf_data = base64.b64decode(pdf['data'])
+# pdf_path = dir + r"\\output.pdf"
+# with open(pdf_path, "wb") as f:
+#     f.write(pdf_data)
 
 
 

@@ -182,4 +182,13 @@ def only_best_results(results):
             new.append(results[i])
     new.append(results[len(results)-1])
     return new
+
+def match_to_map(results, dict, links, browser:webdriver.Edge):
+    for x in results:
+        i, y = dict[x["id"]]
+        links[i][1][y]["score"]=x["score"]
+        links[i][1][y]["sol_link"]=x["link"]+"download/"
+    return links
+        
+# def create_filesystem:
         
