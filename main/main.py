@@ -15,12 +15,9 @@ point_threshold = 0
 #configuring the driver
 dir_temp = dir + "\\temp"
 options = webdriver.EdgeOptions()
-#options.add_argument("--headless")
 options.add_argument("--print-to-pdf")#enable printing
 options.add_argument("--kiosk-printing")#disable prompt
 options.add_argument("--print-to-pdf")#enable printing
-# prefs = {"printing.print_preview_sticky_settings.appState": '{"recentDestinations":[{"id":"Save as PDF","origin":"local","account":"","capabilities":{}}],"selectedDestinationId":"Save as PDF","version":2}',"savefile.default_directory":dir_temp}
-# options.add_experimental_option("prefs", prefs)
 settings = {"recentDestinations": [{"id": "Save as PDF", "origin": "local", "account": ""}], "selectedDestinationId": "Save as PDF", "version": 2}
 prefs = {'printing.print_preview_sticky_settings.appState': json.dumps(settings), "download.default_directory": dir_temp,"download.directory_upgrade": True,
     "download.prompt_for_download": False, "profile.default_content_settings.popups": 0}
@@ -42,6 +39,7 @@ login_name.send_keys(user)
 login_password.send_keys(password)
 login_button.click()
 os.system('cls')
+
 #asking the user which contest do they want to pull from
 table = browser.find_elements(By.CLASS_NAME, "toggle-cg")
 list_of_options = []
@@ -57,6 +55,7 @@ for i in range(len(table)):
 print("Choose the number corresponding to the contest which answers you want to pull")
 for i in range(len(list_of_options)):
     print(i,list_of_options[i].text)
+
 
 choice = int(input())
 # choice =0
@@ -85,6 +84,7 @@ pages = utils.how_many_pages(browser)
 os.system('cls')
 print("Getting link structure...")
 link_structure = utils.extract_link_structure(pages,browser)
+
 os.system('cls')
 print("Creating dictionary...")
 dictionary = utils.create_map(link_structure)
@@ -93,6 +93,7 @@ dictionary = utils.create_map(link_structure)
 url= utils.redirect_to_solutions(url_base)
 browser.get(url)
 pages = utils.how_many_pages(browser)
+
 #result_structure = ("id", "score", "link")
 os.system('cls')
 print("Getting results structure...")
@@ -105,16 +106,6 @@ print("Merging solutions and tasks...")
 merge = utils.match_to_map(result_structure,dictionary, link_structure, browser)
 os.system('cls')
 print("Downloading and organizing files...")
-#utils.file_download(dir_temp, dir,"https://sio2.staszic.waw.pl/c/matinf_k20_c/s/649572/download/",browser,0,"ab ba" )
 # utils.print_link_structure(merge)
 utils.create_filesystem(merge,dir,dir_temp,browser)
 
-
-
-
-
-
-
-
-
-time.sleep(5)
