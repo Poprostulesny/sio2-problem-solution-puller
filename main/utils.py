@@ -2,7 +2,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By 
 from selenium.webdriver.support.relative_locator import locate_with
 from selenium.common.exceptions import NoSuchElementException
-from collections import ChainMap
+from functools import cmp_to_key
 import time
 import os
 
@@ -115,17 +115,17 @@ def create_map(link_structure):
 
     
 def extract_result_structure(pages, browser: webdriver.Edge):
-        #results = ("id", "score", "link")
-        results= []
-        base_url = get_base_url(browser.current_url) +"/submissions/"
-        if(pages == 1):
-            browser.get(base_url)
-            return result_structure(results, browser)
-        
-        for i in range(pages):
-            browser.get(base_url+"/?page=" + str(i+1))
-            results = result_structure(browser, results)
-        return results
+    #results = ("id", "score", "link")
+    results= []
+    base_url = get_base_url(browser.current_url) +"/submissions/"
+    if(pages == 1):
+        browser.get(base_url)
+        return result_structure(results, browser)
+    
+    for i in range(pages):
+        browser.get(base_url+"/?page=" + str(i+1))
+        results = result_structure(browser, results)
+    return results
 
 def id_from_name(str):
     i=0
@@ -148,11 +148,38 @@ def result_structure(browser:webdriver.Edge, result_structure_old):
     rodzaj = browser.find_element(By.XPATH,"//*[contains(text(), 'Rodzaj')]")
     zadania = browser.find_element(By.XPATH,"//*[contains(text(), 'Zadanie')]")
     czas = browser.find_element(By.XPATH,"//*[contains(text(), 'Czas zgłoszenia')]")
+    margines = browser.find_element(By.CLASS_NAME,"submission__margin")
     score = browser.find_elements(locate_with(By.TAG_NAME,'td').below(wynik).to_right_of(zgloszenia))
     tasks = browser.find_elements(locate_with(By.TAG_NAME,'td').below(zadania).to_right_of(czas).to_left_of(rodzaj))
-    links = browser.find_elements(locate_with(By.TAG_NAME,'a').below(czas).to_left_of(zadania))
+    links = browser.find_elements(locate_with(By.TAG_NAME,'a').below(czas).to_left_of(zadania).to_right_of(margines))
     
     for i in range(len(tasks)):
-        result_structure_old.append({ "id":id_from_name(tasks[i].text), "score": score[i].text, "link" :links[i].get_attribute("href")})
+        if(score[i].text == ''):
+            result_structure_old.append({ "id":id_from_name(tasks[i].text), "score": 0, "link" :links[i].get_attribute("href")})
+        else:
+            result_structure_old.append({ "id":id_from_name(tasks[i].text), "score": int(score[i].text), "link" :links[i].get_attribute("href")})
     
     return result_structure_old
+
+def comp(a, b):
+    if a["id"]==b["id"]:
+        if(a["score"]<b["score"]):
+            return -1
+        elif a["score"]==b["score"]:
+            return 0
+        else:
+            return 1
+    elif(a["id"]<b["id"]):
+        return -1
+    else:
+        return 1
+   
+def only_best_results(results):
+    results.sort(key = cmp_to_key(comp))
+    new = []
+    for i in range(len(results)-1):
+        if(results[i]["id"]!=results[i+1]["id"]):
+            new.append(results[i])
+    new.append(results[len(results)-1])
+    return new
+        

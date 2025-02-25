@@ -83,9 +83,11 @@ pages = utils.how_many_pages(browser)
 #result_structure = ("id", "score", "link")
 
 result_structure = utils.extract_result_structure(pages, browser)
+
+result_structure = utils.only_best_results(result_structure)
 for i in result_structure:
     print(i)
-
+    
 
 # browser.get("https://sio2.mimuw.edu.pl/c/oi32-1/p/bit/")
 # browser.execute_script('window.print();')
