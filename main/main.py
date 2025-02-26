@@ -100,6 +100,7 @@ print("Getting results structure...")
 result_structure = utils.extract_result_structure(pages, browser)
 
 result_structure = utils.only_best_results(result_structure)
+
 #merge structure - (topic,list_of_tasks[{"text", "href", "id", "sol_link", "score"}])
 os.system('cls')
 print("Merging solutions and tasks...")

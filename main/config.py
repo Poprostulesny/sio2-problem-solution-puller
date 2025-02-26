@@ -1,9 +1,10 @@
 def fileconfig():
-    user = "abba"
-    password = "eeee"
+    user = "MateuszL"
+    password = "Qw1atek1"
     link = "https://sio2.staszic.waw.pl/"
-    #directory to which all of the data will be downloaded
-    dir = r"C:\Users\jarek\Documents\Zadania SIO2"
+    #directory to which all of the data will be downloaded 
+    # IT HAS TO BE EMPTY
+    dir = r"C:\Users\jarek\Documents\Zadania Pieczarki"
     #your downloads folder
     download_folder_dir= r"C:\Users\jarek\Downloads"
 

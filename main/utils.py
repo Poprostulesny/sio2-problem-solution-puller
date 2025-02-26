@@ -136,7 +136,7 @@ def extract_result_structure(pages, browser: webdriver.Edge):
     base_url = get_base_url(browser.current_url) +"/submissions/"
     if(pages == 1):
         browser.get(base_url)
-        return result_structure(results, browser)
+        return result_structure(browser, results)
     
     for i in range(pages):
         browser.get(base_url+"/?page=" + str(i+1))
@@ -159,7 +159,11 @@ def id_from_name(str):
 def result_structure(browser:webdriver.Edge, result_structure_old):
     #browser.get("https://sio2.staszic.waw.pl/c/matinf_k20_c/submissions/")
     #szukamy elementów ze zgłoszeń poniżęj rubryki wynik i na prawo od rubryki status - same wyniki
-    zgloszenia = browser.find_element(By.XPATH,"//*[contains(text(), 'Status')]")
+    try:
+        zgloszenia = browser.find_element(By.XPATH,"//*[contains(text(), 'Status')]")
+    except NoSuchElementException:
+        a=[]
+        return a
     wynik = browser.find_element(By.XPATH,"//*[contains(text(), 'Wynik')]")
     rodzaj = browser.find_element(By.XPATH,"//*[contains(text(), 'Rodzaj')]")
     zadania = browser.find_element(By.XPATH,"//*[contains(text(), 'Zadanie')]")
