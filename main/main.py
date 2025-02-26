@@ -8,7 +8,7 @@ import config
 import json
 import base64
 #config
-user, password, link, dir = config.fileconfig()
+user, password, link, dir, dir_down = config.fileconfig()
 point_threshold = 0
 ##########
 
@@ -107,5 +107,10 @@ merge = utils.match_to_map(result_structure,dictionary, link_structure, browser)
 os.system('cls')
 print("Downloading and organizing files...")
 # utils.print_link_structure(merge)
-utils.create_filesystem(merge,dir,dir_temp,browser)
+utils.create_filesystem(merge,dir,dir_temp,browser,dir_down)
+os.system('cls')
+print("Done!")
+browser.quit()
+
+
 
