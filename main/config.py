@@ -3,6 +3,6 @@ def fileconfig():
     password = "Qw1atek1"
     link = "https://sio2.staszic.waw.pl/"
     dir = r"C:\Users\jarek\Documents\Zadania SIO2"
+    download_folder_dir= r"C:\Users\jarek\Downloads"
     #all files or only the best ones
-    all = 0
-    return user, password, link, dir
+    return user, password, link, dir, download_folder_dir
