@@ -1,4 +1,4 @@
-How to use
+How to use:
 
 Requirements:
 1. Python libraries:
@@ -14,3 +14,6 @@ Other noteworthy things:
 2. It is possible to use Chrome instead of Edge with tweaks at lines 17 and 26 in main.py
   
   
+Quick guide:
+1. In file config.py you need to set your login, password, and directories to which you want to download all of the files
+2. There is a place where you can add links to other sio2 based websites but only the given one was tested
